@@ -36,27 +36,34 @@ void setup() {
 
 void loop() {
 
-  digitalWrite(13, HIGH);  
-	delay(50);
-  adc_key_in = analogRead(0);    // read the value from the sensor  
-  key = get_key(adc_key_in);		        // convert into key press
-  if (key != oldkey)				
-  {			
-    oldkey = key;
-    if (key >=0){
-      lcd.cursorTo(2, 0);  //line=2, x=0
-      lcd.printIn(read_msg(key));
-    }
+  digitalWrite(13, HIGH);//light up debug LED (onboard)
+
+  key = key_pressed();
+  if (key >= 0){
+    lcd.cursorTo(2, 0);  //line=2, x=0
+    lcd.printIn(read_msg(key));
   }
-  //delay(1000);
-  digitalWrite(13, LOW);
 
-
-
-
-
+  digitalWrite(13, LOW);//turn off debug LED
 }
 
+// if nothing was pressed - return -1, else return the key number
+int key_pressed(void)
+{
+	int pressed = -1;
+	delay(50);//must delay in order to read the input correctly
+  adc_key_in = analogRead(0);    // read the value from the sensor 
+  pressed = get_key(adc_key_in);
+  if (pressed != oldkey)
+  {
+  	oldkey = pressed;
+  }
+  else
+  {
+  	pressed = -1;
+  }
+  return pressed;
+}
 // Convert ADC value to key number
 int get_key(unsigned int input)
 {
